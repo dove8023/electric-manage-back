@@ -1,0 +1,11 @@
+{
+  "name": "new-node-template",
+  "version": "1.0.0",
+  "description": "Node template server app.",
+  "main": "index.js",
+  "author": "Mr.He",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.9.3"
+  }
+}
