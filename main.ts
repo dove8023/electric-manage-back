@@ -1,4 +1,8 @@
-type A string
+/*
+ * @Author: Hearth 
+ * @Date: 2022-11-26 23:00:07 
+ * @Last Modified by: Hearth
+ * @Last Modified time: 2022-11-27 10:34:47
+ * @content what is the content of this file. */
 
-
-const a :A = "abcdf"
+console.log("main running.");
