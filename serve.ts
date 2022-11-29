@@ -1,7 +1,7 @@
-import { existsSync} from "node:fs";
-import * as dotenv from "dotenv";
+import { existsSync } from "node:fs";
+import dotenv from "dotenv";
 
-let envPath;
+let envPath: string;
 if (existsSync("/.dockerenv")) {
 	envPath = "/opt/config/.env";
 } else {
@@ -9,7 +9,7 @@ if (existsSync("/.dockerenv")) {
 }
 
 dotenv.config({
-	path: envPath
+	path: envPath,
 });
 
 import "./main";
