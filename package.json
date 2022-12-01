@@ -1,0 +1,39 @@
+{
+  "name": "new-node-template",
+  "version": "1.0.0",
+  "description": "Node template server app.",
+  "main": "index.js",
+  "author": "Mr.He",
+  "license": "MIT",
+  "scripts": {
+    "start": "tsc && node dist/serve.js",
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/koa": "^2.13.5",
+    "@types/koa-router": "^7.4.4",
+    "@types/koa2-cors": "^2.0.2",
+    "@types/md5": "^2.3.2",
+    "@types/node": "^18.11.9",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.44.0",
+    "@typescript-eslint/parser": "^5.44.0",
+    "eslint": "^8.28.0",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.6",
+    "dotenv": "^16.0.3",
+    "koa": "^2.13.4",
+    "koa-body": "^6.0.1",
+    "koa-router": "^12.0.0",
+    "koa2-cors": "^2.0.6",
+    "log4js": "^6.7.1",
+    "md5": "^2.3.0",
+    "mysql2": "^2.3.3",
+    "redis": "^4.5.1",
+    "sequelize": "^6.26.0",
+    "uuid": "^9.0.0"
+  }
+}
