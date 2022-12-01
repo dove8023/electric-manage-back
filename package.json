@@ -6,7 +6,8 @@
   "author": "Mr.He",
   "license": "MIT",
   "scripts": {
-    "start": "tsc && node dist/serve.js"
+    "start": "tsc && node dist/serve.js",
+    "build": "tsc"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
