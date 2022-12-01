@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-26 23:00:07 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-11-30 11:25:48
+ * @Last Modified time: 2022-12-01 15:10:33
  * @content what is the content of this file. */
 
 import http from "node:http";
@@ -10,7 +10,8 @@ import { chmodSync } from "node:fs";
 import app from "./common/http";
 import KoaRouter from "koa-router";
 import { RegisterRouter } from "./common/restful";
-
+import "./common/cache";
+import "./common/db";
 import "./api/user";
 
 const router = new KoaRouter();
