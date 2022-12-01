@@ -17,7 +17,9 @@ import "./api";
 
 const router = new KoaRouter();
 RegisterRouter(router);
+
 app.use(router.routes());
+app.use(router.allowedMethods());
 
 const server = http.createServer(app.callback());
 
