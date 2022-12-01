@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 16:54:23 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-11-29 23:19:06
+ * @Last Modified time: 2022-12-01 19:34:05
  * @content what is the content of this file. */
 
 import { Context, Next } from "koa";
@@ -68,5 +68,5 @@ export default async function loggerMiddle(ctx: Context, next: Next) {
 		header: ctx.request.header
 	});
 
-	next();
+	await next();
 }

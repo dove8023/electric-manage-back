@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 15:59:05 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-11-30 11:25:13
+ * @Last Modified time: 2022-12-01 19:33:01
  * @content what is the content of this file. */
 
 import koa, { Context, Next } from "koa";
@@ -11,7 +11,7 @@ import { v1 } from "uuid";
 import Dayjs from "dayjs";
 import { response } from "../middleware/response";
 import cors from "koa2-cors";
-import koaBody from "koa-body";
+import bodyParser from "koa-bodyParser";
 
 const app = new koa();
 
@@ -21,7 +21,7 @@ app.use(async (ctx: Context, next: Next) => {
 	const ms = Date.now() - start;
 	ctx.set("X-Response-Time", `${ms}ms`);
 
-	console.log(`${Dayjs().format()}, ${ctx.method}, ${ms}ms,  ${ctx.url}`);
+	console.log(`${Dayjs().format()}, ${ctx.method}, ${ms}ms, ${ctx.status}, ${ctx.url}`);
 });
 
 app.use(loggerMiddle);
@@ -34,19 +34,7 @@ app.use(cors({
 	allowMethods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
 	allowHeaders: ["Content-Type", "Authorization", "Accept", "token"],
 }));
-app.use(koaBody({
-	jsonLimit: "8mb",
-	multipart: true,
-	formidable: {
-		maxFieldsSize: 8 * 1024 * 1024,
-		keepExtensions: true,
-		multiples: false,
-		uploadDir: "./tmp",
-		// onFileBegin(files, file) {
-		// console.log("onFileBegin", typeof file, file)
-		// }
-	}
-}));
+app.use(bodyParser());
 app.use(async (ctx: Context, next: Next) => {
 	try {
 		ctx.response.type = "json";
