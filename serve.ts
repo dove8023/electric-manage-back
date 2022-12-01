@@ -12,4 +12,4 @@ dotenv.config({
 	path: envPath,
 });
 
-import "./main";
+import "./src/main";
