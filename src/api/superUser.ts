@@ -5,13 +5,14 @@ import { ContextCustomer } from "../interface";
 import cache from "../common/cache";
 import { SuperUser } from "../entity";
 import AppDataSource from "../common/db";
+import { Context } from "koa";
 
 @Restful()
 export class SuperUserController {
 
 	@Router("/login", "post")
-	async login(ctx: ContextCustomer){
-		let { username, password } = ctx.request.body as any;
+	async login(ctx: ContextCustomer & Context){
+		let { username, password } = ctx.request.body;
 
 		if(!username || !password){
 			return ctx.error(301);

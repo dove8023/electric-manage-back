@@ -7,8 +7,8 @@
   "license": "MIT",
   "scripts": {
     "start": "npx ts-node serve.ts",
-    "watch": "tsc -w",
-    "build": "tsc"
+    "watch": "npx tsc -w",
+    "build": "npx tsc"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",

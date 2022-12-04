@@ -7,5 +7,6 @@ test/
 LICENSE
 sql/
 tmp/
+dist/
 mytest/
 .editorconfig

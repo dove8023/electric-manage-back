@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 15:59:05 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-01 19:33:01
+ * @Last Modified time: 2022-12-04 14:41:20
  * @content what is the content of this file. */
 
 import koa, { Context, Next } from "koa";
@@ -11,7 +11,7 @@ import { v1 } from "uuid";
 import Dayjs from "dayjs";
 import { response } from "../middleware/response";
 import cors from "koa2-cors";
-import bodyParser from "koa-bodyParser";
+import bodyParser from "koa-bodyparser";
 
 const app = new koa();
 
