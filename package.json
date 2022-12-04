@@ -6,7 +6,8 @@
   "author": "Mr.He",
   "license": "MIT",
   "scripts": {
-    "start": "tsc && node dist/serve.js",
+    "start": "npx ts-node serve.ts",
+    "watch": "tsc -w",
     "build": "tsc"
   },
   "devDependencies": {
@@ -18,9 +19,11 @@
     "@types/md5": "^2.3.2",
     "@types/node": "^18.11.9",
     "@types/uuid": "^8.3.4",
+    "@types/validator": "^13.7.10",
     "@typescript-eslint/eslint-plugin": "^5.44.0",
     "@typescript-eslint/parser": "^5.44.0",
     "eslint": "^8.28.0",
+    "ts-node": "^10.9.1",
     "typescript": "^4.9.3"
   },
   "dependencies": {
@@ -32,9 +35,11 @@
     "koa2-cors": "^2.0.6",
     "log4js": "^6.7.1",
     "md5": "^2.3.0",
-    "mysql2": "^2.3.3",
+    "mysql": "^2.18.1",
     "redis": "^4.5.1",
-    "sequelize": "^6.26.0",
-    "uuid": "^9.0.0"
+    "reflect-metadata": "^0.1.13",
+    "typeorm": "^0.3.10",
+    "uuid": "^9.0.0",
+    "validator": "^13.7.0"
   }
 }

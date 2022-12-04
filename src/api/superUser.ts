@@ -1,13 +1,48 @@
+import md5 from "md5";
+import isEmail from "validator/lib/isEmail";
 import { Restful, Router } from "../common/restful";
 import { ContextCustomer } from "../interface";
+import cache from "../common/cache";
+import { SuperUser } from "../entity";
+import AppDataSource from "../common/db";
 
 @Restful()
-export class SuperUser {
+export class SuperUserController {
 
 	@Router("/login", "post")
-	login(ctx: ContextCustomer){
-		const { username, password } = ctx.request.body as any;
+	async login(ctx: ContextCustomer){
+		let { username, password } = ctx.request.body as any;
 
-		return ctx.success(username + password);
+		if(!username || !password){
+			return ctx.error(301);
+		}
+
+		username = String(username);
+		password = String(password);
+
+		if(!isEmail(username) || password.length > 30){
+			return ctx.error(302);
+		}
+
+		password = md5(password);
+
+		const superUserModel = AppDataSource.getRepository(SuperUser);
+
+		const result: SuperUser | null = await superUserModel.findOneBy({
+			username,
+			password
+		});
+
+		if(!result){
+			return ctx.error(104);
+		}
+
+		const token = md5(Date.now() + result.id + Math.random());
+
+		await cache.write(token, {
+			userId: result.id
+		}, 3600 * 8);
+
+		return ctx.success(token);
 	}
 }

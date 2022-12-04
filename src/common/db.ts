@@ -1,65 +1,34 @@
-/*
- * @Author: Heath 
- * @Date: 2022-10-02 11:55:52 
- * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-01 15:13:11
- * @content what is the content of this file. */
+import "reflect-metadata";
+import { DataSource } from "typeorm";
+import { SuperUser } from "../entity";
 
-import { Sequelize } from "sequelize";
-
-const CONFIG = {
-	// 数据库
-	DBNAME: process.env.MYSQL_DBNAME,
-	// 用户名 (无用户名为空字符串)
-	USERNAME: process.env.MYSQL_USER,
-	// 密码 (无用户名为空字符串)
-	PASSWORD: process.env.MYSQL_PASSWORD,
-	// host
-	HOST: process.env.MYSQL_HOST,
-	// 端口
-	PORT: process.env.MYSQL_PORT
-};
-
-const sequelize = new Sequelize({
-	database: CONFIG.DBNAME,
-	username: CONFIG.USERNAME,
-	password: CONFIG.PASSWORD,
-	host: CONFIG.HOST,
-	dialect: "mysql",
-	timezone: "+08:00",
-	pool: {
-		max: 5,
-		min: 0,
-		acquire: 30000,
-		idle: 10000
-	},
+export const AppDataSource = new DataSource({
+	type: "mysql",
+	host: process.env.MYSQL_HOST,
+	port: Number(process.env.MYSQL_PORT) || 3306,
+	username: process.env.MYSQL_USER,
+	password: process.env.MYSQL_PASSWORD,
+	database: process.env.MYSQL_DBNAME,
+	synchronize: true,
 	logging: false,
-	define: {
-		hooks: {
-			// beforeSave(options) {
-			//     memoryCache.del(options.id);
-			// },
-			// beforeDestroy(options) {
-			//     memoryCache.del(options.id);
-			// }
-		}
-	}
+	entities: [SuperUser],
+	migrations: [],
+	subscribers: [],
 });
 
+AppDataSource.initialize().then(async ()=>{
+	console.log("Database connect success.");
 
-async function connectionTest(){
-	try {
-		await sequelize.authenticate();
-		console.log("Connection has been established successfully.");
-	} catch (error) {
-		console.error("Unable to connect to the database:", error);
-	}
-}
+	// const result = AppDataSource.getRepository(SuperUser).create({
+	// 	username: "admin@tc.com",
+	// 	password: "e10adc3949ba59abbe56e057f20f883e",
+	// 	lastLogin: dayjs().format("YYYY-MM-DD HH:mm:ss")
+	// });
 
-connectionTest();
+	// await AppDataSource.manager.save(result);
 
-sequelize.sync({
-	force: false
+}).catch((err)=>{
+	console.log("Error database connect error: ",err);
 });
 
-export default sequelize;
+export default AppDataSource;

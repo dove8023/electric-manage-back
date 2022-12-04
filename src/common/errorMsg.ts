@@ -2,7 +2,7 @@
  * @Author: Heath 
  * @Date: 2022-10-18 09:44:44 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-11-29 23:24:30
+ * @Last Modified time: 2022-12-02 10:25:20
  * @content what is the content of this file. */
 
 const errorCode: { [index: string]: string } = {
@@ -11,6 +11,7 @@ const errorCode: { [index: string]: string } = {
 	"101": "微信服务器登录请求失败",
 	"102": "您的操作过于频繁，请稍后再试",
 	"103": "请不要重复操作",    // 重复操作接口，执行时间较长，拒绝再次请求
+	"104": "用户名密码不匹配",
 
 
 	//2** 与资源权限有关

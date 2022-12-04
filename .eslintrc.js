@@ -34,6 +34,11 @@ module.exports = {
 			"error",
 			"always"
 		],
-		"no-explicit-any": 0
+		"no-explicit-any": 0,
+		"object-curly-spacing": [
+			"error",
+			"always"
+		],
+		"no-mixed-spaces-and-tabs": 0
 	}
 };

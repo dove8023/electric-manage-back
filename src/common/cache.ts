@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-12-01 12:47:11 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-01 14:48:39
+ * @Last Modified time: 2022-12-04 13:52:01
  * @content what is the content of this file. */
 
 import { createClient, RedisClientType } from "redis";
@@ -17,6 +17,12 @@ export class Cache {
 		this._client = createClient({
 			url: `redis://${HOST}:${PORT}`,
 			database: DB
+		});
+
+		this._client.connect().then(()=>{
+			console.log("Redis connect success.");
+		}).catch((err)=>{
+			console.log("Error: Redis connect failed: " + err);			
 		});
 	}
 

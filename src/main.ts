@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-26 23:00:07 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-01 19:35:36
+ * @Last Modified time: 2022-12-04 13:32:21
  * @content what is the content of this file. */
 
 import http from "node:http";
@@ -12,7 +12,6 @@ import { RegisterRouter } from "./common/restful";
 import app from "./common/http";
 import "./common/cache";
 import "./common/db";
-import "./model";
 import "./api";
 
 const router = new KoaRouter();
