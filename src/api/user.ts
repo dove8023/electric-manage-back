@@ -11,8 +11,42 @@ import { isUUID, validate } from "class-validator";
 @Restful()
 export class UserController {
 	@Router("/ping", "get")
-	good(ctx: ContextCustomer){
+	ping(ctx: ContextCustomer){
 		ctx.success("pong");
+	}
+
+	async find(ctx: Context & ContextCustomer){
+		const { page, size } = ctx.request.query;
+		const pageNum = Number(page) || 0;
+		let sizeNum = Number(size) || 20;
+		if(sizeNum > 50){
+			sizeNum = 50;
+		}
+
+		const userRepository = AppDataSource.getRepository(User);		
+		const sqlResult = await userRepository.find({
+			skip: sizeNum * pageNum,
+			take: sizeNum,
+			order: {
+				createdDate: "DESC"
+			}
+		});
+
+		const result = sqlResult.map((item)=>{
+			return {
+				id: item.id,
+				createdDate: item.createdDate,
+				email: item.email,
+				name: item.name,
+				tel: item.tel,
+				companyName: item.companyName,
+				address: item.address,
+				remark: item.remark,
+				lastLogin: item.lastLogin
+			};
+		});
+
+		ctx.success(result);
 	}
 
 	async post(ctx: Context & ContextCustomer){
@@ -92,4 +126,10 @@ export class UserController {
 
 		ctx.success("ok");
 	}
+
+	/* 重置密码 */
+
+	/* 启用、禁用用户 */
+
+	/* 搜索用户 */
 }
