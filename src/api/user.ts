@@ -2,7 +2,7 @@ import { Context } from "koa";
 import AppDataSource from "../common/db";
 import validator from "validator";
 import { Restful, Router } from "../common/restful";
-import { ContextCustomer } from "../interface";
+import { ContextCustomer, PASSWORD_DEFAULT_LENGTH } from "../interface";
 import { User } from "../entity";
 import { generatePassword } from "../utils/index";
 import md5 from "md5";
@@ -72,7 +72,7 @@ export class UserController {
 		user.address = address;
 		user.remark = remark;
 
-		const password = generatePassword(15);
+		const password = generatePassword(PASSWORD_DEFAULT_LENGTH);
 		user.password = md5(password);
 
 		const errors = await validate(user, {
@@ -128,6 +128,38 @@ export class UserController {
 	}
 
 	/* 重置密码 */
+	@Router("/user/resetpwd/:id", "POST")
+	async resetPassword(ctx: Context & ContextCustomer){
+		const { id } = ctx.request.params;
+		const { type } = ctx.request.body;
+
+		if(!isUUID(id)){
+			return ctx.error(302);
+		}
+
+		if(type !== "RESETPASSWORD"){
+			return ctx.error(302);
+		}
+
+		const userRepository = AppDataSource.getRepository(User);
+		const user = await userRepository.findOneBy({
+			id
+		});
+
+		if(!user){
+			return ctx.error(202);
+		}
+
+		const password = generatePassword(PASSWORD_DEFAULT_LENGTH);
+
+		user.password = md5(password);
+		await AppDataSource.manager.save(user);
+
+		ctx.success({
+			password,
+			email: user.email
+		});
+	}
 
 	/* 启用、禁用用户 */
 

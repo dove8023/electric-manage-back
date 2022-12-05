@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 17:06:43 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-04 14:35:59
+ * @Last Modified time: 2022-12-05 22:03:35
  * @content what is the content of this file. */
 
 import { Request } from "./../node_modules/@types/express-serve-static-core/index.d";
@@ -24,3 +24,5 @@ export interface ContextCustomer {
 export interface DATA {
 	[index: string]: string | number | boolean | object
 }
+
+export const PASSWORD_DEFAULT_LENGTH = 15;
