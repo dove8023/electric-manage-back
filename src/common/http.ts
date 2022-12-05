@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 15:59:05 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-04 14:41:20
+ * @Last Modified time: 2022-12-05 11:57:59
  * @content what is the content of this file. */
 
 import koa, { Context, Next } from "koa";
@@ -12,6 +12,7 @@ import Dayjs from "dayjs";
 import { response } from "../middleware/response";
 import cors from "koa2-cors";
 import bodyParser from "koa-bodyparser";
+import { loginCheck } from "../middleware/loginCheck";
 
 const app = new koa();
 
@@ -49,5 +50,6 @@ app.use(async (ctx: Context, next: Next) => {
 		ctx.error(500, `http error catched, ${err}`);
 	}
 });
+app.use(loginCheck);
 
 export default app;

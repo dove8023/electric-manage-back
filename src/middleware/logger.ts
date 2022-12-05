@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 16:54:23 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-01 19:34:05
+ * @Last Modified time: 2022-12-05 12:12:32
  * @content what is the content of this file. */
 
 import { Context, Next } from "koa";
@@ -44,7 +44,7 @@ log4js.configure({
 
 const logger = log4js.getLogger("daily");
 
-export default async function loggerMiddle(ctx: Context, next: Next) {
+export default function loggerMiddle(ctx: Context, next: Next) {
 	ctx.logger = {
 		info(data: DATA) {
 			logger.info({ ...data, traceId: ctx.state.traceId });
@@ -68,5 +68,5 @@ export default async function loggerMiddle(ctx: Context, next: Next) {
 		header: ctx.request.header
 	});
 
-	await next();
+	return next();
 }

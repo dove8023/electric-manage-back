@@ -10,9 +10,9 @@ import { validate } from "class-validator";
 
 @Restful()
 export class UserController {
-	@Router("/hello", "post")
+	@Router("/ping", "get")
 	good(ctx: ContextCustomer){
-		ctx.success("hello");
+		ctx.success("pong");
 	}
 
 	async post(ctx: Context & ContextCustomer){
