@@ -6,7 +6,7 @@ import { ContextCustomer } from "../interface";
 import { User } from "../entity";
 import { generatePassword } from "../utils/index";
 import md5 from "md5";
-import { validate } from "class-validator";
+import { isUUID, validate } from "class-validator";
 
 @Restful()
 export class UserController {
@@ -53,7 +53,43 @@ export class UserController {
 
 		ctx.success({
 			userId: user.id,
-			password
+			password,
+			email
 		});
+	}
+
+	async put(ctx: Context & ContextCustomer){
+		const { id } = ctx.request.params;
+		const { name, tel, companyName, address, remark } = ctx.request.body;
+		if(!isUUID(id)){
+			return ctx.error(302);
+		}
+
+		const userRepository = AppDataSource.getRepository(User);
+		const user = await userRepository.findOneBy({
+			id
+		});
+
+		if(!user){
+			return ctx.error(202);
+		}
+
+		user.name = name || user.name;
+		user.tel = tel || user.tel;
+		user.companyName = companyName || user.companyName;
+		user.address = address || user.address;
+		user.remark = remark || user.remark;
+
+		const errors = await validate(user, {
+			skipMissingProperties: true
+		});
+
+		if(errors.length){
+			return ctx.error(302);
+		}
+
+		await AppDataSource.manager.save(user);
+
+		ctx.success("ok");
 	}
 }
