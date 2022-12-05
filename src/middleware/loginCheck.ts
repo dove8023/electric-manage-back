@@ -2,13 +2,12 @@
  * @Author: Hearth 
  * @Date: 2022-12-05 11:53:58 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-05 12:13:17
+ * @Last Modified time: 2022-12-05 12:20:03
  * @content what is the content of this file. */
 
 import { Next, Context } from "koa";
 import cache from "../common/cache";
 import { ContextCustomer } from "../interface";
-
 
 const allowPath = ["/login", "/ping"];
 
@@ -33,6 +32,8 @@ export async function loginCheck(ctx: Context & ContextCustomer, next: Next){
 	if(!result){
 		return ctx.error(101);
 	}
+
+	ctx.state.loginInfo = result;
 
 	return next();
 }

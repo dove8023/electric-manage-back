@@ -41,7 +41,8 @@ export class SuperUserController {
 		const token = md5(Date.now() + result.id + Math.random());
 
 		await cache.write(token, {
-			userId: result.id
+			userId: result.id,
+			username: result.username
 		}, 3600 * 8);
 
 		return ctx.success(token);
