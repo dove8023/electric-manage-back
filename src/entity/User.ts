@@ -14,7 +14,7 @@ export class User extends Common{
 
     @Column({ type: "varchar", length: 50, unique: true  })
 	@IsEmail()
-    	email!: string | undefined;
+    	email!: string;
 
     @Column({ type: "char", length: 32 })
 	@Length(32, 32)

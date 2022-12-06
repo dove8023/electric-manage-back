@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 17:06:43 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-06 08:49:37
+ * @Last Modified time: 2022-12-06 12:28:17
  * @content what is the content of this file. */
 
 import { Request } from "./../node_modules/@types/express-serve-static-core/index.d";
@@ -35,4 +35,21 @@ export enum USER_OPTION_TYPE {
 export enum USER_STATE {
 	ENABLE = "ENABLE",
 	DISABLE = "DISABLE"
+}
+
+/* Element model */
+
+export enum ATTRIBUTE_TYPE {
+	INPUT = "input",
+	RANGE = "range",
+	SELECT = "select"
+}
+
+export interface ATTRIBUTE {
+	groupName: string;
+	unit: string;
+	type: ATTRIBUTE_TYPE;
+	id: string;
+	defaultValue: string | string[];
+	options?: { label: string; value: string | number }[]
 }
