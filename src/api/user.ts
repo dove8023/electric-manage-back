@@ -2,7 +2,7 @@ import { Context } from "koa";
 import AppDataSource from "../common/db";
 import validator from "validator";
 import { Restful, Router } from "../common/restful";
-import { ContextCustomer, PASSWORD_DEFAULT_LENGTH } from "../interface";
+import { ContextCustomer, PASSWORD_DEFAULT_LENGTH, USER_OPTION_TYPE, USER_STATE } from "../interface";
 import { User } from "../entity";
 import { generatePassword } from "../utils/index";
 import md5 from "md5";
@@ -71,6 +71,7 @@ export class UserController {
 		user.companyName = companyName;
 		user.address = address;
 		user.remark = remark;
+		user.state = USER_STATE.ENABLE;
 
 		const password = generatePassword(PASSWORD_DEFAULT_LENGTH);
 		user.password = md5(password);
@@ -127,7 +128,6 @@ export class UserController {
 		ctx.success("ok");
 	}
 
-	/* 重置密码 */
 	@Router("/user/resetpwd/:id", "POST")
 	async resetPassword(ctx: Context & ContextCustomer){
 		const { id } = ctx.request.params;
@@ -137,7 +137,7 @@ export class UserController {
 			return ctx.error(302);
 		}
 
-		if(type !== "RESETPASSWORD"){
+		if(type !== USER_OPTION_TYPE.RESETPASSWORD){
 			return ctx.error(302);
 		}
 
@@ -161,7 +161,45 @@ export class UserController {
 		});
 	}
 
-	/* 启用、禁用用户 */
+	@Router("/user/changeState/:id", "POST")
+	async changeState(ctx: Context & ContextCustomer){
+		const { id } = ctx.request.params;
+		const { type, state } = ctx.request.body as {
+			state : USER_STATE,
+			type: USER_OPTION_TYPE
+		};
+
+		if(!isUUID(id)){
+			return ctx.error(302);
+		}
+
+		if(type !== USER_OPTION_TYPE.CHANGESTATE){
+			return ctx.error(302);
+		}
+
+		switch (state) {
+		case USER_STATE.DISABLE:
+		case USER_STATE.ENABLE:
+			break;
+		default:
+			return ctx.error(302);
+		}
+
+		const userRepository = AppDataSource.getRepository(User);
+		const user = await userRepository.findOneBy({
+			id
+		});
+
+		if(!user){
+			return ctx.error(202);
+		}
+
+		user.state = state;
+
+		await AppDataSource.manager.save(user);
+
+		ctx.success("ok");
+	}
 
 	/* 搜索用户 */
 }

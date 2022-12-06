@@ -43,7 +43,7 @@ export class SuperUserController {
 		await cache.write(token, {
 			userId: result.id,
 			username: result.username
-		}, 3600 * 8);
+		}, 3600 * 8 * 100);
 
 		return ctx.success(token);
 	}
