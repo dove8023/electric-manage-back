@@ -7,6 +7,21 @@ import { User } from "../entity";
 import { generatePassword } from "../utils/index";
 import md5 from "md5";
 import { isUUID, validate } from "class-validator";
+import { Like } from "typeorm";
+
+function userListFilter(item: User){
+	return {
+		id: item.id,
+		createdDate: item.createdDate,
+		email: item.email,
+		name: item.name,
+		tel: item.tel,
+		companyName: item.companyName,
+		address: item.address,
+		remark: item.remark,
+		lastLogin: item.lastLogin
+	};
+}
 
 @Restful()
 export class UserController {
@@ -32,19 +47,7 @@ export class UserController {
 			}
 		});
 
-		const result = sqlResult.map((item)=>{
-			return {
-				id: item.id,
-				createdDate: item.createdDate,
-				email: item.email,
-				name: item.name,
-				tel: item.tel,
-				companyName: item.companyName,
-				address: item.address,
-				remark: item.remark,
-				lastLogin: item.lastLogin
-			};
-		});
+		const result = sqlResult.map(userListFilter);
 
 		ctx.success(result);
 	}
@@ -201,5 +204,40 @@ export class UserController {
 		ctx.success("ok");
 	}
 
-	/* 搜索用户 */
+	@Router("/user/search", "GET")
+	async search(ctx: Context & ContextCustomer){
+		const { keyword, page, size } = ctx.request.query;
+		const pageNum = Number(page) || 0;
+		let sizeNum = Number(size) || 20;
+		if(sizeNum > 50){
+			sizeNum = 50;
+		}
+
+		const userRepository = AppDataSource.getRepository(User);		
+		const sqlResult = await userRepository.find({
+			where: [
+				{
+					email: Like(`%${keyword}%`),
+				},
+				{ 
+					companyName: Like(`%${keyword}%`),
+				},
+				{
+					tel: Like(`%${keyword}%`),
+				},
+				{
+					name: Like(`%${keyword}%`),
+				}
+			],
+			skip: sizeNum * pageNum,
+			take: sizeNum,
+			order: {
+				createdDate: "DESC"
+			}
+		});
+
+		const result = sqlResult.map(userListFilter);
+
+		ctx.success(result);
+	}
 }
