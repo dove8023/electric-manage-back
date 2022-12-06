@@ -1,6 +1,6 @@
 import { Entity,  Column } from "typeorm";
 import { Common } from "./Common";
-import { ATTRIBUTE } from "../interface";
+import { ELEMENT_ATTRIBUTE } from "../interface";
 import {
 	Length,
 } from "class-validator";
@@ -21,5 +21,5 @@ export class Element extends Common{
 		enName: string | undefined;
 
 	@Column({ type: "json" })
-		attributes!: ATTRIBUTE[];
+		attributes!: ELEMENT_ATTRIBUTE[];
 }

@@ -2,9 +2,10 @@
  * @Author: Hearth 
  * @Date: 2022-12-05 10:29:10 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-05 10:41:26
+ * @Last Modified time: 2022-12-06 15:59:04
  * @content what is the content of this file. */
 
+export * from "./element";
 
 const lowercase = "abcdefghijklmnopqrstuvwxyz",
 	uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",

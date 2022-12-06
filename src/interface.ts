@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 17:06:43 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-06 12:28:17
+ * @Last Modified time: 2022-12-06 16:52:32
  * @content what is the content of this file. */
 
 import { Request } from "./../node_modules/@types/express-serve-static-core/index.d";
@@ -45,11 +45,17 @@ export enum ATTRIBUTE_TYPE {
 	SELECT = "select"
 }
 
-export interface ATTRIBUTE {
+export interface SELECT_OPTION {
+	label: string;
+	value: string | number
+}
+
+export interface ELEMENT_ATTRIBUTE {
 	groupName: string;
+	name: string;
 	unit: string;
 	type: ATTRIBUTE_TYPE;
 	id: string;
 	defaultValue: string | string[];
-	options?: { label: string; value: string | number }[]
+	options?: SELECT_OPTION[]
 }

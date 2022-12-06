@@ -23,6 +23,8 @@ function userListFilter(item: User){
 	};
 }
 
+type CTX = Context & ContextCustomer;
+
 @Restful()
 export class UserController {
 	@Router("/ping", "get")
@@ -30,7 +32,25 @@ export class UserController {
 		ctx.success("pong");
 	}
 
-	async find(ctx: Context & ContextCustomer){
+	async get(ctx: CTX){
+		const { id } = ctx.request.params;
+		if(!isUUID(id)){
+			return ctx.error(302);
+		}
+
+		const userRepository = AppDataSource.getRepository(User);
+		const user = await userRepository.findOneBy({
+			id
+		});
+
+		if(!user){
+			return ctx.error(202);
+		}
+
+		return ctx.success(userListFilter(user));
+	}
+
+	async find(ctx: CTX){
 		const { page, size } = ctx.request.query;
 		const pageNum = Number(page) || 0;
 		let sizeNum = Number(size) || 20;
@@ -52,7 +72,7 @@ export class UserController {
 		ctx.success(result);
 	}
 
-	async post(ctx: Context & ContextCustomer){
+	async post(ctx: CTX){
 		const { email, name, tel, companyName, address, remark } = ctx.request.body;
 
 		if(!email || !validator.isEmail(email)){
@@ -96,7 +116,7 @@ export class UserController {
 		});
 	}
 
-	async put(ctx: Context & ContextCustomer){
+	async put(ctx: CTX){
 		const { id } = ctx.request.params;
 		const { name, tel, companyName, address, remark } = ctx.request.body;
 		if(!isUUID(id)){
@@ -132,7 +152,7 @@ export class UserController {
 	}
 
 	@Router("/user/resetpwd/:id", "POST")
-	async resetPassword(ctx: Context & ContextCustomer){
+	async resetPassword(ctx: CTX){
 		const { id } = ctx.request.params;
 		const { type } = ctx.request.body;
 
@@ -165,7 +185,7 @@ export class UserController {
 	}
 
 	@Router("/user/changeState/:id", "POST")
-	async changeState(ctx: Context & ContextCustomer){
+	async changeState(ctx: CTX){
 		const { id } = ctx.request.params;
 		const { type, state } = ctx.request.body as {
 			state : USER_STATE,
@@ -205,7 +225,7 @@ export class UserController {
 	}
 
 	@Router("/user/search", "GET")
-	async search(ctx: Context & ContextCustomer){
+	async search(ctx: CTX){
 		const { keyword, page, size } = ctx.request.query;
 		const pageNum = Number(page) || 0;
 		let sizeNum = Number(size) || 20;

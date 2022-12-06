@@ -39,6 +39,10 @@ module.exports = {
 			"error",
 			"always"
 		],
+		"space-in-brackets": [
+			"error",
+			"always"
+		],
 		"no-mixed-spaces-and-tabs": 0
 	}
 };
