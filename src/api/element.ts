@@ -1,27 +1,11 @@
 import { Context } from "koa";
 import AppDataSource from "../common/db";
-import validator from "validator";
 import { Restful, Router } from "../common/restful";
-import { ContextCustomer, PASSWORD_DEFAULT_LENGTH } from "../interface";
+import { ContextCustomer } from "../interface";
 import { Element } from "../entity";
-import { checkSerialNumber, generatePassword } from "../utils/index";
-import md5 from "md5";
-import { isUUID, validate } from "class-validator";
+import { checkElementAttributes, checkSerialNumber } from "../utils/index";
+import { isString, isUUID, validate } from "class-validator";
 import { Like } from "typeorm";
-
-function userListFilter(item: User){
-	return {
-		id: item.id,
-		createdDate: item.createdDate,
-		email: item.email,
-		name: item.name,
-		tel: item.tel,
-		companyName: item.companyName,
-		address: item.address,
-		remark: item.remark,
-		lastLogin: item.lastLogin
-	};
-}
 
 @Restful()
 export class ElementController {
@@ -51,14 +35,37 @@ export class ElementController {
 	async post(ctx: Context & ContextCustomer){
 		const { serialNumber, zhName, enName, attributes } = ctx.request.body;
 
-		if(!serialNumber || !zhName || !attributes || !Array.isArray(attributes)){
+		if(!serialNumber || !zhName || !isString(zhName) || !attributes || !Array.isArray(attributes)){
+			return ctx.error(302);
+		}
+
+		if(enName || !isString(enName)){
 			return ctx.error(302);
 		}
 
 		if(!checkSerialNumber(serialNumber)){
-			return ctx.error(302, "元器件编号不符合规范，eg: AA022");
+			return ctx.error(601);
 		}
 
+		const checkedAttributes = checkElementAttributes(attributes);
+		if(!checkedAttributes){
+			return ctx.error(602);
+		}
+
+		const element = new Element();
+		element.serialNumber = serialNumber;
+		element.zhName = zhName;
+		element.enName = enName;
+		element.attributes = checkedAttributes;
+		
+		const errors = await validate(element, {
+			skipMissingProperties: true
+		});
+
+		if(errors.length){
+			return ctx.error(302);
+		}
+		
 		const hasElement = await AppDataSource.manager.findOneBy(Element, {
 			serialNumber
 		});
@@ -67,37 +74,10 @@ export class ElementController {
 			return ctx.error(600);
 		}
 
-		// check attributes
-
-
-
-
-		const user = new User();
-		user.email = email;
-		user.name = name;
-		user.tel = tel;
-		user.companyName = companyName;
-		user.address = address;
-		user.remark = remark;
-		user.state = USER_STATE.ENABLE;
-
-		const password = generatePassword(PASSWORD_DEFAULT_LENGTH);
-		user.password = md5(password);
-
-		const errors = await validate(user, {
-			skipMissingProperties: true
-		});
-
-		if(errors.length){
-			return ctx.error(302);
-		}
-
-		await AppDataSource.manager.save(user);
+		await AppDataSource.manager.save(element);
 
 		ctx.success({
-			userId: user.id,
-			password,
-			email
+			id: element.id,
 		});
 	}
 

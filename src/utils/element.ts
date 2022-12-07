@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-12-06 15:58:09 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-06 17:13:37
+ * @Last Modified time: 2022-12-07 09:57:01
  * @content what is the content of this file. */
 
 import { isString } from "class-validator";
@@ -21,7 +21,7 @@ export function checkStrAndMaxLength(str: string | undefined, len: number): bool
 	return !!str.length && str.length <= len;
 }
 
-export function checkAttribute(data: ELEMENT_ATTRIBUTE): null | ELEMENT_ATTRIBUTE{
+export function checkElementAttributeByOne(data: ELEMENT_ATTRIBUTE): null | ELEMENT_ATTRIBUTE{
 	const { groupName, name, unit, type } = data;
 	let { defaultValue, options } = data;
 
@@ -29,17 +29,17 @@ export function checkAttribute(data: ELEMENT_ATTRIBUTE): null | ELEMENT_ATTRIBUT
 		return null;
 	}
 
-	let isOkDefaultValue = false;
 	let checkOptions: Array<SELECT_OPTION | null>;
+	let checkOptionsDefaultValue = false;
 
 	switch (type) {
 	case ATTRIBUTE_TYPE.INPUT:
-		if(defaultValue && !checkStrAndMaxLength(defaultValue.toString(), 50)){
+		if(defaultValue && !Number(defaultValue)){
 			return null;
 		}
 		break;
 	case ATTRIBUTE_TYPE.RANGE:
-		if(defaultValue && !Array.isArray(defaultValue)){
+		if(!Array.isArray(defaultValue)){
 			return null;
 		}
 
@@ -52,26 +52,26 @@ export function checkAttribute(data: ELEMENT_ATTRIBUTE): null | ELEMENT_ATTRIBUT
 
 		checkOptions = options.map((item)=>{
 			const { label, value } = item;
-			if(!checkStrAndMaxLength(label, 50) || !checkStrAndMaxLength(value.toString(), 50)){
+			if(!checkStrAndMaxLength(label, 50) || !Number(value)){
 				return null;
 			}
 
 			if(defaultValue === value){
-				isOkDefaultValue = true;
+				checkOptionsDefaultValue = true;
 			}
 
 			return { label, value };
 		});
 
-		if(!isOkDefaultValue){
+		if(!checkOptionsDefaultValue){
 			return null;
 		}
 
-		if(checkOptions.filter(item=>!!item).length !== checkOptions.length){
+		if(checkOptions.indexOf(null) > -1){
 			return null;
 		}
 
-		options = checkOptions.filter(item=>!!item) as SELECT_OPTION[];
+		options = checkOptions as SELECT_OPTION[];
 
 		break;
 	default:
@@ -83,7 +83,19 @@ export function checkAttribute(data: ELEMENT_ATTRIBUTE): null | ELEMENT_ATTRIBUT
 	} as ELEMENT_ATTRIBUTE;
 }
 
-export function checkElementAttributes(data: ELEMENT_ATTRIBUTE[]): boolean{
-	
-	return true;
+export function checkElementAttributes(data: ELEMENT_ATTRIBUTE[]): null | ELEMENT_ATTRIBUTE[]{
+	// check name, name must unique and not undefined
+	let names = data.map(item=>item.name).filter(item=>!!item);
+	names = [ ...new Set(names) ];
+
+	if(names.length !== data.length){
+		return null;
+	}
+
+	const result = data.map(item => checkElementAttributeByOne(item));
+	if(result.indexOf(null) > -1){
+		return null;
+	}
+
+	return result as ELEMENT_ATTRIBUTE[];
 }

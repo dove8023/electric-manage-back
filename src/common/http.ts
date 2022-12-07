@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 15:59:05 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-05 11:57:59
+ * @Last Modified time: 2022-12-07 09:57:12
  * @content what is the content of this file. */
 
 import koa, { Context, Next } from "koa";
@@ -29,11 +29,11 @@ app.use(loggerMiddle);
 app.use(response);
 app.use(cors({
 	origin: "*",
-	exposeHeaders: ["WWW-Authenticate", "Server-Authorization"],
+	exposeHeaders: [ "WWW-Authenticate", "Server-Authorization" ],
 	maxAge: 5,
 	credentials: true,
-	allowMethods: ["GET", "POST", "DELETE", "PUT", "OPTIONS"],
-	allowHeaders: ["Content-Type", "Authorization", "Accept", "token"],
+	allowMethods: [ "GET", "POST", "DELETE", "PUT", "OPTIONS" ],
+	allowHeaders: [ "Content-Type", "Authorization", "Accept", "token" ],
 }));
 app.use(bodyParser());
 app.use(async (ctx: Context, next: Next) => {

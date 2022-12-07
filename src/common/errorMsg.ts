@@ -2,7 +2,7 @@
  * @Author: Heath 
  * @Date: 2022-10-18 09:44:44 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-06 15:43:36
+ * @Last Modified time: 2022-12-07 09:43:53
  * @content what is the content of this file. */
 
 const errorCode: { [index: string]: string } = {
@@ -30,7 +30,9 @@ const errorCode: { [index: string]: string } = {
 	"550": "邮箱已占用，请使用其它邮箱",
 
 	// element model
-	"600": "元器件编号已存在，请更换编号"
+	"600": "元器件编号已存在，请更换编号",
+	"601": "元器件编号不符合规范，eg: AA022",
+	"602": "元器件属性数据验证不通过",
 
 };
 
