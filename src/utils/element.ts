@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-12-06 15:58:09 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-07 09:57:01
+ * @Last Modified time: 2022-12-07 10:13:18
  * @content what is the content of this file. */
 
 import { isString } from "class-validator";
@@ -40,6 +40,14 @@ export function checkElementAttributeByOne(data: ELEMENT_ATTRIBUTE): null | ELEM
 		break;
 	case ATTRIBUTE_TYPE.RANGE:
 		if(!Array.isArray(defaultValue)){
+			return null;
+		}
+
+		if(defaultValue[ 0 ] && !Number(defaultValue[ 0 ])){
+			return null;
+		}
+
+		if(defaultValue[ 1 ] && !Number(defaultValue[ 1 ])){
 			return null;
 		}
 

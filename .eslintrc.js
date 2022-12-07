@@ -39,10 +39,6 @@ module.exports = {
 			"error",
 			"always"
 		],
-		"array-bracket-spacing": [
-			"error",
-			"always"
-		],
 		"computed-property-spacing": [
 			"error",
 			"always"

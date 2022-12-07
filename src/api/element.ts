@@ -39,7 +39,7 @@ export class ElementController {
 			return ctx.error(302);
 		}
 
-		if(enName || !isString(enName)){
+		if(enName && !isString(enName)){
 			return ctx.error(302);
 		}
 
