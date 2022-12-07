@@ -1,6 +1,6 @@
 import { Context } from "koa";
 import AppDataSource from "../common/db";
-import { Restful } from "../common/restful";
+import { Restful, Router } from "../common/restful";
 import { ContextCustomer } from "../interface";
 import { Element } from "../entity";
 import { checkElementAttributes, checkSerialNumber } from "../utils/index";
@@ -174,5 +174,43 @@ export class ElementController {
 		ctx.success({
 			id: element.id,
 		});
+	}
+
+	@Router("/element/isExist", "GET")
+	async checkExistBySerialNumber(ctx: Context & ContextCustomer){
+		let { serials } = ctx.request.query;
+		if(!serials || 
+			(!isString(serials) && !Array.isArray(serials))
+		){
+			return ctx.error(302);
+		}
+
+		if(!Array.isArray(serials)){
+			serials = [serials];
+		}
+
+		const checkResult = serials.map(item=>checkSerialNumber(item));
+		if(checkResult.indexOf(false) > -1){
+			return ctx.error(610);
+		}
+
+		if(serials.length > 10){
+			return ctx.error(611);
+		}
+
+		const ps = serials.map(async (serialNumber)=>{
+			const element = await AppDataSource.manager.findOneBy(Element, {
+				serialNumber: serialNumber.toString()
+			});
+
+			return {
+				serialNumber,
+				has: !!element
+			};
+		});
+
+		const result = await Promise.all(ps);
+
+		ctx.success(result);
 	}
 }

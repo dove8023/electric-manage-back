@@ -2,7 +2,7 @@
  * @Author: Heath 
  * @Date: 2022-10-10 17:24:21 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-11-30 11:44:30
+ * @Last Modified time: 2022-12-07 21:29:23
  * @content what is the content of this file. */
 
 
@@ -16,9 +16,9 @@ const DefaultMethod = ["get", "find", "post", "put", "delete"];
 export function Restful(modelUrl?: string) {
 	return function (target: any) {
 		if (!modelUrl) {
-			modelUrl = "/restful/" + target.name.replace(/Controller/, "");
+			modelUrl = "/" + target.name.replace(/Controller/, "") + "/restful";
 		}
-		allControlls[modelUrl] = target;
+		allControlls[ modelUrl ] = target;
 	};
 }
 
@@ -32,7 +32,7 @@ export function Router(url: string, method = "get") {
 
 export function RegisterRouter(router: KoaRouter) {
 	for (const url in allControlls) {
-		loadRouter(url, allControlls[url], router);
+		loadRouter(url, allControlls[ url ], router);
 	}
 }
 
@@ -52,7 +52,7 @@ function loadRouter(modelUrl: string, target: any, router: KoaRouter) {
 			return;
 		}
 
-		const fn = target.prototype[method];
+		const fn = target.prototype[ method ];
 		if (typeof fn != "function") {
 			return;
 		}

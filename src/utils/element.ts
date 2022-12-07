@@ -2,13 +2,16 @@
  * @Author: Hearth 
  * @Date: 2022-12-06 15:58:09 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-07 10:13:18
+ * @Last Modified time: 2022-12-07 12:12:25
  * @content what is the content of this file. */
 
 import { isString } from "class-validator";
 import { ELEMENT_ATTRIBUTE, ATTRIBUTE_TYPE, SELECT_OPTION } from "../interface";
 
-export function checkSerialNumber(num: string){
+export function checkSerialNumber(num: unknown): boolean{
+	if(!num || !isString(num)){
+		return false;
+	}
 	const reg = /[A-Z0-9]{5}/;
 	return reg.test(num);
 }
