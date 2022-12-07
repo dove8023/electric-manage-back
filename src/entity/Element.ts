@@ -12,7 +12,7 @@ export class Element extends Common{
     @Column({ type: "varchar", length: 50, unique: true  })
     	serialNumber!: string;
 
-    @Column({ type: "varchar", length: 50 })
+    @Column({ type: "varchar", length: 50, unique: true })
 	@Length(1, 50)
     	zhName!: string;
 

@@ -1,36 +1,65 @@
 import { Context } from "koa";
 import AppDataSource from "../common/db";
-import { Restful, Router } from "../common/restful";
+import { Restful } from "../common/restful";
 import { ContextCustomer } from "../interface";
 import { Element } from "../entity";
 import { checkElementAttributes, checkSerialNumber } from "../utils/index";
 import { isString, isUUID, validate } from "class-validator";
-import { Like } from "typeorm";
+import { Not, Equal } from "typeorm";
+
+function elementListFilter(item: Element){
+	return {
+		id: item.id,
+		createdDate: item.createdDate,
+		serialNumber: item.serialNumber,
+		zhName: item.zhName,
+		enName: item.enName,
+		attributes: item.attributes,
+	};
+}
 
 @Restful()
 export class ElementController {
 
-	// async find(ctx: Context & ContextCustomer){
-	// 	const { page, size } = ctx.request.query;
-	// 	const pageNum = Number(page) || 0;
-	// 	let sizeNum = Number(size) || 20;
-	// 	if(sizeNum > 50){
-	// 		sizeNum = 50;
-	// 	}
+	async get(ctx: Context & ContextCustomer){
+		const { id } = ctx.request.params;
+		if(!isUUID(id)){
+			return ctx.error(302);
+		}
 
-	// 	const userRepository = AppDataSource.getRepository(User);		
-	// 	const sqlResult = await userRepository.find({
-	// 		skip: sizeNum * pageNum,
-	// 		take: sizeNum,
-	// 		order: {
-	// 			createdDate: "DESC"
-	// 		}
-	// 	});
+		const repository = AppDataSource.getRepository(Element);
+		const element = await repository.findOneBy({
+			id
+		});
 
-	// 	const result = sqlResult.map(userListFilter);
+		if(!element){
+			return ctx.error(202);
+		}
 
-	// 	ctx.success(result);
-	// }
+		return ctx.success(elementListFilter(element));
+	}
+
+	async find(ctx: Context & ContextCustomer){
+		const { page, size } = ctx.request.query;
+		const pageNum = Number(page) || 0;
+		let sizeNum = Number(size) || 20;
+		if(sizeNum > 50){
+			sizeNum = 50;
+		}
+
+		const elementRepository = AppDataSource.getRepository(Element);		
+		const sqlResult = await elementRepository.find({
+			skip: sizeNum * pageNum,
+			take: sizeNum,
+			order: {
+				createdDate: "DESC"
+			}
+		});
+
+		const result = sqlResult.map(elementListFilter);
+
+		ctx.success(result);
+	}
 
 	async post(ctx: Context & ContextCustomer){
 		const { serialNumber, zhName, enName, attributes } = ctx.request.body;
@@ -66,12 +95,20 @@ export class ElementController {
 			return ctx.error(302);
 		}
 		
-		const hasElement = await AppDataSource.manager.findOneBy(Element, {
+		const hasElementBySerialNumber = await AppDataSource.manager.findOneBy(Element, {
 			serialNumber
 		});
 
-		if(hasElement){
+		if(hasElementBySerialNumber){
 			return ctx.error(600);
+		}
+
+		const hasElementByName = await AppDataSource.manager.findOneBy(Element, {
+			zhName
+		});
+
+		if(hasElementByName){
+			return ctx.error(603);
 		}
 
 		await AppDataSource.manager.save(element);
@@ -81,148 +118,61 @@ export class ElementController {
 		});
 	}
 
-	// async put(ctx: Context & ContextCustomer){
-	// 	const { id } = ctx.request.params;
-	// 	const { name, tel, companyName, address, remark } = ctx.request.body;
-	// 	if(!isUUID(id)){
-	// 		return ctx.error(302);
-	// 	}
+	async put(ctx: Context & ContextCustomer){
+		const { id } = ctx.request.params;
+		const { zhName, enName, attributes } = ctx.request.body;
 
-	// 	const userRepository = AppDataSource.getRepository(User);
-	// 	const user = await userRepository.findOneBy({
-	// 		id
-	// 	});
+		if(!isUUID(id)){
+			return ctx.error(302);
+		}
 
-	// 	if(!user){
-	// 		return ctx.error(202);
-	// 	}
+		if(!zhName || !isString(zhName) || !attributes || !Array.isArray(attributes)){
+			return ctx.error(302);
+		}
 
-	// 	user.name = name || user.name;
-	// 	user.tel = tel || user.tel;
-	// 	user.companyName = companyName || user.companyName;
-	// 	user.address = address || user.address;
-	// 	user.remark = remark || user.remark;
+		if(enName && !isString(enName)){
+			return ctx.error(302);
+		}
 
-	// 	const errors = await validate(user, {
-	// 		skipMissingProperties: true
-	// 	});
+		const checkedAttributes = checkElementAttributes(attributes);
+		if(!checkedAttributes){
+			return ctx.error(602);
+		}
 
-	// 	if(errors.length){
-	// 		return ctx.error(302);
-	// 	}
+		const elementRepository = AppDataSource.getRepository(Element);
+		const element = await elementRepository.findOneBy({
+			id
+		});
 
-	// 	await AppDataSource.manager.save(user);
+		if(!element){
+			return ctx.error(202);
+		}
 
-	// 	ctx.success("ok");
-	// }
+		element.zhName = zhName;
+		element.enName = enName || element.enName;
+		element.attributes = checkedAttributes;
 
-	// @Router("/user/resetpwd/:id", "POST")
-	// async resetPassword(ctx: Context & ContextCustomer){
-	// 	const { id } = ctx.request.params;
-	// 	const { type } = ctx.request.body;
+		const errors = await validate(element, {
+			skipMissingProperties: true
+		});
 
-	// 	if(!isUUID(id)){
-	// 		return ctx.error(302);
-	// 	}
+		if(errors.length){
+			return ctx.error(302);
+		}
 
-	// 	if(type !== USER_OPTION_TYPE.RESETPASSWORD){
-	// 		return ctx.error(302);
-	// 	}
+		const hasElementByName = await AppDataSource.manager.findOneBy(Element, {
+			zhName,
+			id: Not(Equal(element.id))
+		});
 
-	// 	const userRepository = AppDataSource.getRepository(User);
-	// 	const user = await userRepository.findOneBy({
-	// 		id
-	// 	});
+		if(hasElementByName){
+			return ctx.error(603);
+		}
 
-	// 	if(!user){
-	// 		return ctx.error(202);
-	// 	}
+		await AppDataSource.manager.save(element);
 
-	// 	const password = generatePassword(PASSWORD_DEFAULT_LENGTH);
-
-	// 	user.password = md5(password);
-	// 	await AppDataSource.manager.save(user);
-
-	// 	ctx.success({
-	// 		password,
-	// 		email: user.email
-	// 	});
-	// }
-
-	// @Router("/user/changeState/:id", "POST")
-	// async changeState(ctx: Context & ContextCustomer){
-	// 	const { id } = ctx.request.params;
-	// 	const { type, state } = ctx.request.body as {
-	// 		state : USER_STATE,
-	// 		type: USER_OPTION_TYPE
-	// 	};
-
-	// 	if(!isUUID(id)){
-	// 		return ctx.error(302);
-	// 	}
-
-	// 	if(type !== USER_OPTION_TYPE.CHANGESTATE){
-	// 		return ctx.error(302);
-	// 	}
-
-	// 	switch (state) {
-	// 	case USER_STATE.DISABLE:
-	// 	case USER_STATE.ENABLE:
-	// 		break;
-	// 	default:
-	// 		return ctx.error(302);
-	// 	}
-
-	// 	const userRepository = AppDataSource.getRepository(User);
-	// 	const user = await userRepository.findOneBy({
-	// 		id
-	// 	});
-
-	// 	if(!user){
-	// 		return ctx.error(202);
-	// 	}
-
-	// 	user.state = state;
-
-	// 	await AppDataSource.manager.save(user);
-
-	// 	ctx.success("ok");
-	// }
-
-	// @Router("/user/search", "GET")
-	// async search(ctx: Context & ContextCustomer){
-	// 	const { keyword, page, size } = ctx.request.query;
-	// 	const pageNum = Number(page) || 0;
-	// 	let sizeNum = Number(size) || 20;
-	// 	if(sizeNum > 50){
-	// 		sizeNum = 50;
-	// 	}
-
-	// 	const userRepository = AppDataSource.getRepository(User);		
-	// 	const sqlResult = await userRepository.find({
-	// 		where: [
-	// 			{
-	// 				email: Like(`%${keyword}%`),
-	// 			},
-	// 			{ 
-	// 				companyName: Like(`%${keyword}%`),
-	// 			},
-	// 			{
-	// 				tel: Like(`%${keyword}%`),
-	// 			},
-	// 			{
-	// 				name: Like(`%${keyword}%`),
-	// 			}
-	// 		],
-	// 		skip: sizeNum * pageNum,
-	// 		take: sizeNum,
-	// 		order: {
-	// 			createdDate: "DESC"
-	// 		}
-	// 	});
-
-	// 	const result = sqlResult.map(userListFilter);
-
-	// 	ctx.success(result);
-	// }
+		ctx.success({
+			id: element.id,
+		});
+	}
 }
