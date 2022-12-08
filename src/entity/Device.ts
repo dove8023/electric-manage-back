@@ -12,6 +12,9 @@ export class Device extends Common{
     @Column({ type: "varchar", length: 50, unique: true  })
     	serialNumber!: string;
 
+	@Column({ type: "tinyint" })
+		state!: boolean;
+
     @Column({ type: "varchar", length: 50, unique: true })
 	@Length(1, 50)
     	zhName!: string;

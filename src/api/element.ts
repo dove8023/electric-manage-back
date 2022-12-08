@@ -11,6 +11,7 @@ function elementListFilter(item: Element){
 	return {
 		id: item.id,
 		createdDate: item.createdDate,
+		updatedDate: item.updatedDate,
 		serialNumber: item.serialNumber,
 		zhName: item.zhName,
 		enName: item.enName,

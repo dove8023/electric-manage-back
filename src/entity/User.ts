@@ -1,11 +1,9 @@
 import { Entity,  Column } from "typeorm";
 import { Common } from "./Common";
-import { USER_STATE } from "../interface";
 import {
 	Length,
 	IsEmail,
 	MaxLength,
-	IsEnum
 } from "class-validator";
 
 
@@ -20,9 +18,8 @@ export class User extends Common{
 	@Length(32, 32)
     	password!: string;
 
-	@Column({ type: "varchar", length: 7 })
-	@IsEnum(USER_STATE)
-		state!: string;
+	@Column({ type: "tinyint" })
+		state!: boolean;
 
 	@Column({ type: "varchar", length: 50, nullable:true })
 	@MaxLength(50)

@@ -2,7 +2,7 @@ import { Context } from "koa";
 import AppDataSource from "../common/db";
 import validator from "validator";
 import { Restful, Router } from "../common/restful";
-import { ContextCustomer, PASSWORD_DEFAULT_LENGTH, USER_OPTION_TYPE, USER_STATE } from "../interface";
+import { ContextCustomer, PASSWORD_DEFAULT_LENGTH, USER_OPTION_TYPE } from "../interface";
 import { User } from "../entity";
 import { generatePassword } from "../utils/index";
 import md5 from "md5";
@@ -94,7 +94,7 @@ export class UserController {
 		user.companyName = companyName;
 		user.address = address;
 		user.remark = remark;
-		user.state = USER_STATE.ENABLE;
+		user.state = true;
 
 		const password = generatePassword(PASSWORD_DEFAULT_LENGTH);
 		user.password = md5(password);
@@ -188,23 +188,11 @@ export class UserController {
 	async changeState(ctx: CTX){
 		const { id } = ctx.request.params;
 		const { type, state } = ctx.request.body as {
-			state : USER_STATE,
+			state : boolean,
 			type: USER_OPTION_TYPE
 		};
 
-		if(!isUUID(id)){
-			return ctx.error(302);
-		}
-
-		if(type !== USER_OPTION_TYPE.CHANGESTATE){
-			return ctx.error(302);
-		}
-
-		switch (state) {
-		case USER_STATE.DISABLE:
-		case USER_STATE.ENABLE:
-			break;
-		default:
+		if(!isUUID(id) || type !== USER_OPTION_TYPE.CHANGESTATE || typeof state !== "boolean"){
 			return ctx.error(302);
 		}
 
@@ -215,6 +203,10 @@ export class UserController {
 
 		if(!user){
 			return ctx.error(202);
+		}
+
+		if(user.state === state){
+			return ctx.error(203);
 		}
 
 		user.state = state;
