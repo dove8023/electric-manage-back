@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 17:06:43 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-08 14:31:48
+ * @Last Modified time: 2022-12-08 15:37:22
  * @content what is the content of this file. */
 
 import { Request } from "./../node_modules/@types/express-serve-static-core/index.d";
@@ -56,4 +56,9 @@ export interface ELEMENT_ATTRIBUTE {
 
 export interface DEVICE_ATTRIBUTE extends ELEMENT_ATTRIBUTE {
 	isPrefix?: boolean
+}
+
+export interface PROJECT_ATTRIBUTE {
+	name: string;
+	value: number | number[];
 }
