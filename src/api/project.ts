@@ -116,4 +116,23 @@ export class ProjectController {
 
 
 	/* remove demo project */
+	async delete(ctx: Context & ContextCustomer){
+		const { id } = ctx.request.params;
+		if(!isUUID(id)){
+			return ctx.error(302);
+		}
+
+		const repository = AppDataSource.getRepository(Project);
+		const project = await repository.findOneBy({
+			id
+		});
+
+		if(!project){
+			return ctx.error(202);
+		}
+
+		await AppDataSource.manager.softRemove(project);
+
+		ctx.success("ok");
+	}
 }
