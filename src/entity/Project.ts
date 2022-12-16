@@ -14,8 +14,8 @@ export class Project extends Common{
 	@Column("uuid")
     	deviceId!: string;
 
-    @Column({ type: "varchar", length: 50, unique: true })
-	@Length(1, 50)
+    @Column({ type: "varchar", length: 100 })
+	@Length(1, 100)
     	name!: string;
 
 	@Column({ type: "tinyint", default: false })

@@ -1,23 +1,29 @@
 import { Context } from "koa";
 import AppDataSource from "../common/db";
 import { Restful, Router } from "../common/restful";
-import { ContextCustomer } from "../interface";
-import { Project } from "../entity";
-import { checkSerialNumber, checkDeviceAttributes } from "../utils/index";
-import { isBoolean, isString, isUUID, validate } from "class-validator";
+import { ContextCustomer, DATA } from "../interface";
+import { Project, User } from "../entity";
+import { formatRawData } from "../utils/index";
+import { isString, isUUID, validate } from "class-validator";
 import { Not, Equal } from "typeorm";
 
-function projectColumnFilter(item: Project){
+function projectColumnFilter(data: DATA){
+	const result = formatRawData(data, ["project", "user"]);
+	if(!result){
+		return null;
+	}
+
+	const user = result.user as User;
+	const project = result.project as Project;
+
 	return {
-		id: item.id,
-		createdDate: item.createdDate,
-		updatedDate: item.updatedDate,
-		serialNumber: item.name,
-		zhName: item.desc,
-		enName: item.deviceAttributes,
-		attributes: item.elementAttributes,
-		svg: item.userId,
-		// companyName, userName
+		id: project.id,
+		createdDate: project.createdDate,
+		updatedDate: project.updatedDate,
+		name: project.name,
+		isDemo: project.isDemo,
+		companyName: user.companyName,
+		userName: user.name
 	};
 }
 
@@ -31,48 +37,38 @@ export class ProjectController {
 		}
 
 		const repository = AppDataSource.getRepository(Project);
-		const project = await repository.findOneBy({
-			id
-		});
+		const result = await repository.createQueryBuilder("project")
+			.leftJoinAndSelect(User, "user", "project.userId = user.id")
+			.where("project.id = :id", { id })
+			.getRawOne();
 
-		if(!project){
+		if(!result){
 			return ctx.error(202);
 		}
 
-		return ctx.success(projectColumnFilter(project));
+		return ctx.success(projectColumnFilter(result));
 	}
 
 	async find(ctx: Context & ContextCustomer){
-		const { page, size, isDemo = false } = ctx.request.query;
+		const { page, size } = ctx.request.query;
+		const isDemo = Boolean(ctx.request.query.isDemo);
 		const pageNum = Number(page) || 0;
 		let sizeNum = Number(size) || 20;
 		if(sizeNum > 50){
 			sizeNum = 50;
 		}
 
-		if(!isBoolean(isDemo)){
-			return ctx.error(302);
-		}
-
 		const repository = AppDataSource.getRepository(Project);		
-		const sqlResult = await repository.find({
-			where: {
-				isDemo: Boolean(isDemo)
-			},
-			skip: sizeNum * pageNum,
-			take: sizeNum,
-			order: {
-				createdDate: "DESC"
-			}
-		});
+		const result = await repository.createQueryBuilder("project")
+			.leftJoinAndSelect(User, "user", "project.userId = user.id")
+			.where("project.isDemo = :isDemo", { isDemo })
+			.offset(sizeNum * pageNum)
+			.limit(sizeNum)
+			.getRawMany();
 
-		const result = sqlResult.map(projectColumnFilter);
-
-		ctx.success(result);
+		ctx.success(result.map(item=>projectColumnFilter(item)));
 	}
 
-	/* search */
- 
 	@Router("/project/saveAsDemo/:id", "POST")
 	async saveAsDemo(ctx: Context & ContextCustomer){
 		const { id } = ctx.request.params;
@@ -115,6 +111,9 @@ export class ProjectController {
 			id: demoProject.id
 		});
 	}
+
+	/* search */
+
 
 	/* remove demo project */
 }

@@ -41,7 +41,7 @@ module.exports = {
 		],
 		"computed-property-spacing": [
 			"error",
-			"always"
+			"never"
 		],
 		"no-mixed-spaces-and-tabs": 0
 	}
