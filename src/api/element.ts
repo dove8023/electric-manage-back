@@ -49,7 +49,7 @@ export class ElementController {
 		}
 
 		const elementRepository = AppDataSource.getRepository(Element);		
-		const sqlResult = await elementRepository.find({
+		const [sqlResult, count] = await elementRepository.findAndCount({
 			skip: sizeNum * pageNum,
 			take: sizeNum,
 			order: {
@@ -59,7 +59,10 @@ export class ElementController {
 
 		const result = sqlResult.map(elementListFilter);
 
-		ctx.success(result);
+		ctx.success({
+			count,
+			list: result
+		});
 	}
 
 	async post(ctx: Context & ContextCustomer){

@@ -70,14 +70,19 @@ export class ProjectController {
 		}
 
 		const repository = AppDataSource.getRepository(Project);		
-		const result = await repository.createQueryBuilder("project")
+		const queryBuilder = repository.createQueryBuilder("project")
 			.leftJoinAndSelect(User, "user", "project.userId = user.id")
 			.where("project.isDemo = :isDemo", { isDemo: demo })
 			.offset(sizeNum * pageNum)
-			.limit(sizeNum)
-			.getRawMany();
+			.limit(sizeNum);
 
-		ctx.success(result.map(item=>projectColumnFilter(item)));
+		const count = await queryBuilder.getCount();
+		const result = await queryBuilder.getRawMany();		
+		
+		ctx.success({
+			count,
+			list: result.map(item=>projectColumnFilter(item))
+		});
 	}
 
 	/* search */
@@ -109,14 +114,19 @@ export class ProjectController {
 		}
 
 		const repository = AppDataSource.getRepository(Project);
-		const result = await repository.createQueryBuilder("project")
+		const queryBuilder = repository.createQueryBuilder("project")
 			.leftJoinAndSelect(User, "user", "project.userId = user.id")
 			.where("project.isDemo = :isDemo and (project.name like :keyword or user.companyName like :keyword or user.name like :keyword)", { keyword: `%${keyword}%`, isDemo:demo })
 			.offset(sizeNum * pageNum)
-			.limit(sizeNum)
-			.getRawMany();
+			.limit(sizeNum);
 
-		return ctx.success(result.map(item=>projectColumnFilter(item)));
+		const result = await queryBuilder.getRawMany();
+		const count = await queryBuilder.getCount();
+
+		ctx.success({
+			count,
+			list: result.map(item=>projectColumnFilter(item))
+		});
 	}
 
 

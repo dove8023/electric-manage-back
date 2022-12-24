@@ -50,7 +50,7 @@ export class DeviceController {
 		}
 
 		const repository = AppDataSource.getRepository(Device);		
-		const sqlResult = await repository.find({
+		const [sqlResult, count] = await repository.findAndCount({
 			skip: sizeNum * pageNum,
 			take: sizeNum,
 			order: {
@@ -60,7 +60,10 @@ export class DeviceController {
 
 		const result = sqlResult.map(deviceListFilter);
 
-		ctx.success(result);
+		ctx.success({
+			count,
+			list: result
+		});
 	}
 
 	async post(ctx: Context & ContextCustomer){

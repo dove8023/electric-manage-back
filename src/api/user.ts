@@ -59,7 +59,7 @@ export class UserController {
 		}
 
 		const userRepository = AppDataSource.getRepository(User);		
-		const sqlResult = await userRepository.find({
+		const [sqlResult, count] = await userRepository.findAndCount({
 			skip: sizeNum * pageNum,
 			take: sizeNum,
 			order: {
@@ -69,7 +69,10 @@ export class UserController {
 
 		const result = sqlResult.map(userListFilter);
 
-		ctx.success(result);
+		ctx.success({
+			count,
+			list: result
+		});
 	}
 
 	async post(ctx: CTX){
@@ -226,7 +229,7 @@ export class UserController {
 		}
 
 		const userRepository = AppDataSource.getRepository(User);		
-		const sqlResult = await userRepository.find({
+		const [sqlResult, count] = await userRepository.findAndCount({
 			where: [
 				{
 					email: Like(`%${keyword}%`),
@@ -250,6 +253,9 @@ export class UserController {
 
 		const result = sqlResult.map(userListFilter);
 
-		ctx.success(result);
+		ctx.success({
+			count,
+			list: result
+		});
 	}
 }
