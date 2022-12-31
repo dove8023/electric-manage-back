@@ -1,7 +1,7 @@
 import { Context } from "koa";
 import AppDataSource from "../common/db";
 import { Restful, Router } from "../common/restful";
-import { ContextCustomer } from "../interface";
+import { ContextCustomer, STATE } from "../interface";
 import { Device } from "../entity";
 import { checkSerialNumber, checkDeviceAttributes } from "../utils/index";
 import { isString, isUUID, validate } from "class-validator";
@@ -196,10 +196,22 @@ export class DeviceController {
 	async changeState(ctx: Context & ContextCustomer){
 		const { id } = ctx.request.params;
 		const { state } = ctx.request.body as {
-			state : boolean,
+			state : STATE,
 		};
 
-		if(!isUUID(id) || typeof state !== "boolean"){
+		if(!isUUID(id) || !state){
+			return ctx.error(302);
+		}
+
+		let deviceState: boolean;
+		switch (state) {
+		case STATE.DISABLE:
+			deviceState = false;
+			break;
+		case STATE.ENABLE:
+			deviceState = true;
+			break;
+		default:
 			return ctx.error(302);
 		}
 
@@ -212,11 +224,11 @@ export class DeviceController {
 			return ctx.error(202);
 		}
 
-		if(device.state === state){
+		if(Boolean(device.state) === deviceState){
 			return ctx.error(203);
 		}
 
-		device.state = state;
+		device.state = deviceState;
 
 		await AppDataSource.manager.save(device);
 

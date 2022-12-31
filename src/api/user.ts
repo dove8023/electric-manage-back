@@ -2,7 +2,7 @@ import { Context } from "koa";
 import AppDataSource from "../common/db";
 import validator from "validator";
 import { Restful, Router } from "../common/restful";
-import { ContextCustomer, PASSWORD_DEFAULT_LENGTH, USER_OPTION_TYPE } from "../interface";
+import { ContextCustomer, PASSWORD_DEFAULT_LENGTH, STATE, USER_OPTION_TYPE } from "../interface";
 import { User } from "../entity";
 import { generatePassword } from "../utils/index";
 import md5 from "md5";
@@ -191,11 +191,24 @@ export class UserController {
 	async changeState(ctx: CTX){
 		const { id } = ctx.request.params;
 		const { type, state } = ctx.request.body as {
-			state : boolean,
+			state : STATE,
 			type: USER_OPTION_TYPE
 		};
 
-		if(!isUUID(id) || type !== USER_OPTION_TYPE.CHANGESTATE || typeof state !== "boolean"){
+		if(!isUUID(id) || type !== USER_OPTION_TYPE.CHANGESTATE){
+			return ctx.error(302);
+		}
+
+		let userState: boolean;
+		switch (state) {
+		case STATE.DISABLE:
+			userState = false;
+			break;
+		case STATE.ENABLE:
+			userState = true;
+			break;
+		
+		default:
 			return ctx.error(302);
 		}
 
@@ -208,11 +221,11 @@ export class UserController {
 			return ctx.error(202);
 		}
 
-		if(user.state === state){
+		if(Boolean(user.state) === userState){
 			return ctx.error(203);
 		}
 
-		user.state = state;
+		user.state = userState;
 
 		await AppDataSource.manager.save(user);
 

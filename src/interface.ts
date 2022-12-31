@@ -2,7 +2,7 @@
  * @Author: Hearth 
  * @Date: 2022-11-29 17:06:43 
  * @Last Modified by: Hearth
- * @Last Modified time: 2022-12-08 15:37:22
+ * @Last Modified time: 2022-12-31 12:30:14
  * @content what is the content of this file. */
 
 import { Request } from "./../node_modules/@types/express-serve-static-core/index.d";
@@ -30,6 +30,11 @@ export const PASSWORD_DEFAULT_LENGTH = 15;
 export enum USER_OPTION_TYPE {
 	RESETPASSWORD = "RESET_PASSWORD",
 	CHANGESTATE = "CHANGE_STATE"
+}
+
+export enum STATE {
+	DISABLE = "DISABLE",
+	ENABLE = "ENABLE"
 }
 
 /* Element model */
