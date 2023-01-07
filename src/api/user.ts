@@ -15,6 +15,7 @@ function userListFilter(item: User){
 		createdDate: item.createdDate,
 		email: item.email,
 		name: item.name,
+		state: item.state,
 		tel: item.tel,
 		companyName: item.companyName,
 		address: item.address,

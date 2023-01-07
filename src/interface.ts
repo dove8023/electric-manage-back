@@ -40,9 +40,9 @@ export enum STATE {
 /* Element model */
 
 export enum ATTRIBUTE_TYPE {
-	INPUT = "input",
-	RANGE = "range",
-	SELECT = "select"
+	INPUT = "INPUT",
+	RANGE = "RANGE",
+	SELECT = "SELECT"
 }
 
 export interface SELECT_OPTION {
@@ -52,7 +52,8 @@ export interface SELECT_OPTION {
 
 export interface ELEMENT_ATTRIBUTE {
 	groupName: string;
-	name: string;
+	zhName: string;
+	enName: string;
 	unit: string;
 	type: ATTRIBUTE_TYPE;
 	defaultValue: number | number[];

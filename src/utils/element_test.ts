@@ -8,7 +8,8 @@ test("check element attribute with one item data rules test", async (t) => {
 		const data = {
 			groupName: "first groupfirst groupfirst groupfirst",
 			unit: "KW",
-			name: "Element One",
+			zhName: "Element One",
+			enName: "SS_ONE",
 			type: ATTRIBUTE_TYPE.RANGE,
 			defaultValue: [ 90, 200 ],
 		} as ELEMENT_ATTRIBUTE;
@@ -23,7 +24,8 @@ test("check element attribute with one item data rules test", async (t) => {
 		const data = {
 			groupName: "first groupfirst groupfirst groupfirst",
 			unit: "KW",
-			name: "Element One",
+			zhName: "Element One",
+			enName: "SS_TWO",
 			type: ATTRIBUTE_TYPE.SELECT,
 			defaultValue: 200,
 			options: [ {

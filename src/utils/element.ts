@@ -25,10 +25,10 @@ export function checkStrAndMaxLength(str: string | undefined, len: number): bool
 }
 
 export function checkElementAttributeByOne(data: ELEMENT_ATTRIBUTE): null | ELEMENT_ATTRIBUTE{
-	const { groupName, name, unit, type } = data;
+	const { groupName, zhName, enName, unit, type } = data;
 	let { defaultValue, options } = data;
 
-	if(!checkStrAndMaxLength(groupName, 50) || !checkStrAndMaxLength(name, 50) || !checkStrAndMaxLength(unit, 10)){
+	if(!checkStrAndMaxLength(groupName, 50) || !checkStrAndMaxLength(zhName, 50) || !checkStrAndMaxLength(enName, 50) || !checkStrAndMaxLength(unit, 10)){
 		return null;
 	}
 
@@ -46,11 +46,11 @@ export function checkElementAttributeByOne(data: ELEMENT_ATTRIBUTE): null | ELEM
 			return null;
 		}
 
-		if(defaultValue[ 0 ] && !Number(defaultValue[ 0 ])){
+		if(defaultValue[0] && !Number(defaultValue[0])){
 			return null;
 		}
 
-		if(defaultValue[ 1 ] && !Number(defaultValue[ 1 ])){
+		if(defaultValue[1] && !Number(defaultValue[1])){
 			return null;
 		}
 
@@ -90,16 +90,23 @@ export function checkElementAttributeByOne(data: ELEMENT_ATTRIBUTE): null | ELEM
 	}
 
 	return {
-		groupName, name, unit, type, defaultValue, options
+		groupName, zhName, enName, unit, type, defaultValue, options
 	} as ELEMENT_ATTRIBUTE;
 }
 
 export function checkElementAttributes(data: ELEMENT_ATTRIBUTE[]): null | ELEMENT_ATTRIBUTE[]{
 	// check name, name must unique and not undefined
-	let names = data.map(item=>item.name).filter(item=>!!item);
+	let names = data.map(item=>item.zhName).filter(item=>!!item);
 	names = [ ...new Set(names) ];
 
 	if(names.length !== data.length){
+		return null;
+	}
+
+	let enNames = data.map(item=>item.enName).filter(item=>!!item);
+	enNames = [...new Set(enNames)];
+
+	if(enNames.length !== data.length){
 		return null;
 	}
 
