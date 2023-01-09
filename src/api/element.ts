@@ -5,7 +5,7 @@ import { ContextCustomer } from "../interface";
 import { Element } from "../entity";
 import { checkElementAttributes, checkSerialNumber } from "../utils/index";
 import { isString, isUUID, validate } from "class-validator";
-import { Not, Equal } from "typeorm";
+import { Not, Equal, Like } from "typeorm";
 
 function elementListFilter(item: Element){
 	return {
@@ -41,21 +41,38 @@ export class ElementController {
 	}
 
 	async find(ctx: Context & ContextCustomer){
-		const { page, size } = ctx.request.query;
+		const { page, size, keyword } = ctx.request.query;
 		const pageNum = Number(page) || 0;
 		let sizeNum = Number(size) || 20;
 		if(sizeNum > 50){
 			sizeNum = 50;
 		}
 
-		const elementRepository = AppDataSource.getRepository(Element);		
-		const [sqlResult, count] = await elementRepository.findAndCount({
+		if(keyword && keyword.length > 30){
+			return ctx.error(302);
+		}
+
+		const elementRepository = AppDataSource.getRepository(Element);
+		const option: any = {
 			skip: sizeNum * pageNum,
 			take: sizeNum,
 			order: {
 				createdDate: "DESC"
 			}
-		});
+		};
+
+		if(keyword){
+			option.where = [
+				{
+					serialNumber: Like(`%${keyword}%`),
+				},
+				{ 
+					zhName: Like(`%${keyword}%`),
+				}
+			];
+		}
+
+		const [sqlResult, count] = await elementRepository.findAndCount(option);
 
 		const result = sqlResult.map(elementListFilter);
 
