@@ -197,17 +197,12 @@ export class ElementController {
 		});
 	}
 
-	@Router("/element/isExist", "GET")
+	@Router("/element/isExist", "POST")
 	async checkExistBySerialNumber(ctx: Context & ContextCustomer){
-		let { serials } = ctx.request.query;
-		if(!serials || 
-			(!isString(serials) && !Array.isArray(serials))
-		){
-			return ctx.error(302);
-		}
+		const { serials } = ctx.request.body;
 
 		if(!Array.isArray(serials)){
-			serials = [serials];
+			return ctx.error(302);
 		}
 
 		const checkResult = serials.map(item=>checkSerialNumber(item));
@@ -215,7 +210,7 @@ export class ElementController {
 			return ctx.error(610);
 		}
 
-		if(serials.length > 10){
+		if(serials.length > 20){
 			return ctx.error(611);
 		}
 
@@ -226,7 +221,8 @@ export class ElementController {
 
 			return {
 				serialNumber,
-				has: !!element
+				isExist: !!element,
+				zhName: element?.zhName
 			};
 		});
 
